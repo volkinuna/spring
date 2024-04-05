@@ -28,6 +28,7 @@
         <result column="category_code" property="categoryCode"/>
 
         <collection property="category" resultMap="Category"/>
+        <collection property="member" resultMap="Member"/>
     </resultMap>
 
     <!-- map: hashmap 의미 -->
@@ -55,5 +56,33 @@
         WHERE MEMBER_ID  = #{memberId}
         AND ${searchKey} LIKE '%' || #{searchValue} || '%'
     </select>
+
+    <!-- 조회수 올리기 -->
+    <update id="updateHitCount">
+        update post set views = views + 1 where post_id = #{postId}
+    </update>
+
+    <select id="getReadPost" parameterType="int" resultType="Post" resultMap="Post">
+        SELECT p.POST_ID, p.SUBJECT, p.CONTENT, p.MEMBER_ID, p.WRITE_DATE, p.UPDATE_DATE,
+        p.VIEWS, p.CATEGORY_CODE, m.MEMBER_ID, m.NAME, m.EMAIL
+        FROM POST p, MEMBER m
+        WHERE p.MEMBER_ID = m.MEMBER_ID
+        AND p.POST_ID = #{postId}
+    </select>
+
+    <!-- 게시물 insert, update, delete -->
+    <insert id="insertPost" parameterType="Post">
+        insert into post
+        values(post_seq.nextval, #{subject}, #{content}, #{memberId}, sysdate, sysdate, 0, #{categoryCode})
+    </insert>
+
+    <update id="updatePost" parameterType="Post">
+        UPDATE POST SET SUBJECT = #{subject}, CONTENT = #{content}, UPDATE_DATE = SYSDATE, CATEGORY_CODE = #{categoryCode}
+        WHERE POST_ID = #{postId}
+    </update>
+
+    <delete id="deletePost" parameterType="int">
+        delete post where post_id = #{postId}
+    </delete>
 
 </mapper>

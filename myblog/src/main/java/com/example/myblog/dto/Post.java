@@ -17,4 +17,5 @@ public class Post {
 
     //post 가져올 때 카테고리 내용 가져오기 위한 목적
     private Category category;
+    private Member member;
 }
